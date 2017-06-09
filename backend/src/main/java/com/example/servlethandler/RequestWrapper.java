@@ -1,6 +1,7 @@
-package com.example.eduardm.myapplication.backend;
+package com.example.servlethandler;
 
 import com.google.common.net.HttpHeaders;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
@@ -8,8 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -92,6 +92,19 @@ public class RequestWrapper {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void sendRedirect(String redirectLink) throws IOException {
+        if(mode == MODE_SERVLET) {
+            httpServletResponse.sendRedirect(redirectLink);
+        } else if(mode == MODE_EXCHANGE) {
+            Headers responseHeaders = httpExchange.getResponseHeaders();
+            responseHeaders.set(HttpHeaders.CONTENT_TYPE, "text/plain");
+            responseHeaders.set(HttpHeaders.DATE, new Date().toString());
+            responseHeaders.set(HttpHeaders.LOCATION, redirectLink);
+            httpExchange.sendResponseHeaders(302, 0);
+            httpExchange.close();
         }
     }
 

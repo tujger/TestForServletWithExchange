@@ -1,4 +1,4 @@
-package com.example.eduardm.myapplication.backend;
+package com.example.servlethandler;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -20,6 +20,9 @@ public class MyServer {
 
             HelpServletHandler helpHandler = new HelpServletHandler();
             server.createContext("/help", helpHandler);
+
+            RedirectServletHandler redirectHandler = new RedirectServletHandler();
+            server.createContext("/redirect", redirectHandler);
 
             ExecutorService executor = Executors.newCachedThreadPool();
             server.setExecutor(executor);

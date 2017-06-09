@@ -1,4 +1,4 @@
-package com.example.eduardm.myapplication.backend;
+package com.example.servlethandler;
 
 import com.google.common.net.HttpHeaders;
 

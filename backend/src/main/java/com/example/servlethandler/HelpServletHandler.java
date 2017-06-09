@@ -1,4 +1,4 @@
-package com.example.eduardm.myapplication.backend;
+package com.example.servlethandler;
 
 import com.google.common.net.HttpHeaders;
 
@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Created by eduardm on 009, 6/9/2017.
+ * Created 6/9/2017.
  */
 
 public class HelpServletHandler extends AbstractServletHandler {

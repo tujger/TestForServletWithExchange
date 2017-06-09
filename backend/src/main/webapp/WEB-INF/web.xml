@@ -3,11 +3,15 @@
 
     <servlet>
         <servlet-name>MainServlet</servlet-name>
-        <servlet-class>com.example.eduardm.myapplication.backend.MainServletHandler</servlet-class>
+        <servlet-class>com.example.servlethandler.MainServletHandler</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>HelpServlet</servlet-name>
-        <servlet-class>com.example.eduardm.myapplication.backend.HelpServletHandler</servlet-class>
+        <servlet-class>com.example.servlethandler.HelpServletHandler</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RedirectServlet</servlet-name>
+        <servlet-class>com.example.servlethandler.RedirectServletHandler</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -17,6 +21,10 @@
     <servlet-mapping>
         <servlet-name>HelpServlet</servlet-name>
         <url-pattern>/help/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RedirectServlet</servlet-name>
+        <url-pattern>/redirect/*</url-pattern>
     </servlet-mapping>
 
 </web-app>

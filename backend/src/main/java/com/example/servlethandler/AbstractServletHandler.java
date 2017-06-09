@@ -4,7 +4,7 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/HelloWorld
 */
 
-package com.example.eduardm.myapplication.backend;
+package com.example.servlethandler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
