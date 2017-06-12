@@ -10,25 +10,25 @@ import java.util.concurrent.Executors;
 
 public class MyServer {
 
-        public static void main(final String[] args ) throws InterruptedException , IOException {
+    public static void main(final String[] args ) throws InterruptedException , IOException {
 
-            HttpServer server = HttpServer.create();
-            server.bind(new InetSocketAddress(8081), 0);
+        HttpServer server = HttpServer.create();
+        server.bind(new InetSocketAddress(8091), 0);
 
-            MainServletHandler mainHandler = new MainServletHandler();
-            server.createContext("/", mainHandler);
+        MainServletHandler mainHandler = new MainServletHandler();
+        server.createContext("/", mainHandler);
 
-            HelpServletHandler helpHandler = new HelpServletHandler();
-            server.createContext("/help", helpHandler);
+        HelpServletHandler helpHandler = new HelpServletHandler();
+        server.createContext("/help", helpHandler);
 
-            RedirectServletHandler redirectHandler = new RedirectServletHandler();
-            server.createContext("/redirect", redirectHandler);
+        RedirectServletHandler redirectHandler = new RedirectServletHandler();
+        server.createContext("/redirect", redirectHandler);
 
-            ExecutorService executor = Executors.newCachedThreadPool();
-            server.setExecutor(executor);
+        ExecutorService executor = Executors.newCachedThreadPool();
+        server.setExecutor(executor);
 
-            server.start();
-
-        }
+        server.start();
 
     }
+
+}

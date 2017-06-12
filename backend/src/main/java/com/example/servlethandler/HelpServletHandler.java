@@ -14,11 +14,6 @@ import java.nio.charset.StandardCharsets;
 public class HelpServletHandler extends AbstractServletHandler {
 
     @Override
-    public String toString() {
-        return "HelpServletHandler{}";
-    }
-
-    @Override
     public void perform(RequestWrapper requestWrapper) {
 
         try {

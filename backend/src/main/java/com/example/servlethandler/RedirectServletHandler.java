@@ -14,11 +14,6 @@ import java.nio.charset.StandardCharsets;
 public class RedirectServletHandler extends AbstractServletHandler {
 
     @Override
-    public String toString() {
-        return "RedirectServletHandler{}";
-    }
-
-    @Override
     public void perform(RequestWrapper requestWrapper) {
 
         try {
