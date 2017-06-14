@@ -27,14 +27,9 @@ public class HelpServletHandler extends AbstractServletHandler {
 
             Logger Log = Logger.getLogger(HelpServletHandler.class.getCanonicalName());
 
-            Log.info("Sending the todo list email.");
-
-
             requestWrapper.setHeader(HttpHeaders.CONTENT_TYPE, "text/html");
             requestWrapper.sendResponseHeaders(200,0);
 
-            // Note: Ensure that the [PRIVATE_KEY_FILENAME].json has read
-            // permissions set.
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setServiceAccount(getServletContext().getResourceAsStream("/WEB-INF/TestHandlerVsServlet-4eedb75a0862.json"))
                     .setDatabaseUrl("https://testhandlervsservlet.firebaseio.com/")
@@ -54,13 +49,8 @@ public class HelpServletHandler extends AbstractServletHandler {
                 Log.info("already exists...");
             }
 
-            // As an admin, the app has access to read and write all data, regardless of Security Rules
-            DatabaseReference ref = FirebaseDatabase
-                    .getInstance()
-                    .getReference();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
-            // This fires when the servlet first runs, returning all the existing values
-            // only runs once, until the servlet starts up again.
             String name = String.valueOf(Math.random()).replace(".","_");
             Task<Void> task = ref.child(name).setValue(true);
 
