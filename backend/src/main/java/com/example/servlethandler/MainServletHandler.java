@@ -15,6 +15,7 @@ public class MainServletHandler extends AbstractServletHandler {
 
     @Override
     public void perform(RequestWrapper requestWrapper) {
+        requestWrapper.setGzip(true);
 
         try {
 
@@ -34,6 +35,8 @@ public class MainServletHandler extends AbstractServletHandler {
             OutputStream os = requestWrapper.getOutputStream();
             os.write(string.getBytes(charset));
             os.close();
+
+            System.out.println(requestWrapper.getRequestMethod());
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -4,12 +4,21 @@ import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,10 +27,10 @@ import javax.servlet.http.HttpServletResponse;
  * Created 6/9/2017.
  */
 
-public class RequestWrapper {
+public class RequestWrapper  {
 
-    private final static int MODE_SERVLET = 0;
-    private final static int MODE_EXCHANGE = 1;
+    protected final static int MODE_SERVLET = 0;
+    protected final static int MODE_EXCHANGE = 1;
 
     private HttpServletRequest httpServletRequest;
     private HttpServletResponse httpServletResponse;
@@ -29,6 +38,7 @@ public class RequestWrapper {
     private HttpExchange httpExchange;
 
     private int mode;
+    private boolean gzip = false;
 
     @Override
     public String toString() {
@@ -84,9 +94,21 @@ public class RequestWrapper {
         }
     }
 
+    public void addHeader(String name, String value) {
+        if(mode == MODE_SERVLET) {
+            httpServletResponse.addHeader(name, value);
+        } else if(mode == MODE_EXCHANGE) {
+            httpExchange.getResponseHeaders().add(name, value);
+        }
+    }
+
     public void sendResponseHeaders(int code, int arg1) {
         if(mode == MODE_SERVLET) {
         } else if(mode == MODE_EXCHANGE) {
+            if(isGzip()) {
+                setHeader(HttpHeaders.CONTENT_ENCODING, "gzip");
+            }
+
             try {
                 httpExchange.sendResponseHeaders(code, arg1);
             } catch (IOException e) {
@@ -112,9 +134,17 @@ public class RequestWrapper {
         if(mode == MODE_SERVLET) {
             return httpServletResponse.getOutputStream();
         } else if(mode == MODE_EXCHANGE) {
-            return httpExchange.getResponseBody();
+            if(isGzip()) {
+                return new BufferedOutputStream(new GZIPOutputStream(httpExchange.getResponseBody()));
+            } else {
+                return httpExchange.getResponseBody();
+            }
         }
         return null;
+    }
+
+    public OutputStream getResponseBody() throws IOException {
+        return getOutputStream();
     }
 
     public InputStream getInputStream() throws IOException {
@@ -126,6 +156,71 @@ public class RequestWrapper {
         return null;
     }
 
+    public InputStream getRequestBody() throws IOException {
+        return getInputStream();
+    }
+
+    public InetSocketAddress getRemoteAddress() {
+        if(mode == MODE_SERVLET) {
+            return new InetSocketAddress(httpServletRequest.getRemoteAddr(), httpServletRequest.getRemotePort());
+        } else if(mode == MODE_EXCHANGE) {
+            return httpExchange.getRemoteAddress();
+        }
+        return null;
+    }
+
+    public Map<String, List<String>> getRequestHeaders() {
+        if(mode == MODE_SERVLET) {
+//            Headers implements Map<String, List<String>> {
+            Map<String, List<String>> headers = new HashMap<>();
+            String x;
+            Enumeration<String> names = httpServletRequest.getHeaderNames();
+            while(names.hasMoreElements()) {
+                x = names.nextElement();
+                Enumeration<String> h = httpServletRequest.getHeaders(x);
+                headers.put(x, Collections.list(h) );
+            }
+            return headers;
+        } else if(mode == MODE_EXCHANGE) {
+            Map<String, List<String>> headers = new HashMap<>();
+            Map.Entry<String, List<String>> entry;
+
+            Iterator<Map.Entry<String, List<String>>> iter = httpExchange.getRequestHeaders().entrySet().iterator();
+            while(iter.hasNext()) {
+                entry = iter.next();
+                headers.put(entry.getKey(), entry.getValue() );
+            }
+            return headers;
+        }
+        return null;
+    }
+
+    public List<String> getRequestHeader(String name) {
+        if(mode == MODE_SERVLET) {
+            return Collections.list(httpServletRequest.getHeaders(name));
+        } else if(mode == MODE_EXCHANGE) {
+            Headers headers = httpExchange.getRequestHeaders();
+            if(headers.containsKey(name)) {
+                return httpExchange.getRequestHeaders().get(name);
+            } else {
+                return Collections.emptyList();
+            }
+        }
+        return null;
+    }
+
+    public String getRequestMethod() {
+        if(mode == MODE_SERVLET) {
+            return httpServletRequest.getMethod();
+        } else if(mode == MODE_EXCHANGE) {
+            return httpExchange.getRequestMethod();
+        }
+        return null;
+    }
+
+    public String getMethod() {
+        return getRequestMethod();
+    }
 
     public int getMode() {
         return mode;
@@ -133,5 +228,13 @@ public class RequestWrapper {
 
     public void setMode(int mode) {
         this.mode = mode;
+    }
+
+    public boolean isGzip() {
+        return gzip;
+    }
+
+    public void setGzip(boolean gzip) {
+        this.gzip = gzip;
     }
 }
